@@ -1,0 +1,85 @@
+{
+	"name": "ds_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dwh_stg",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "SK_ACCOUNT_Staging",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ACCOUNT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "TIMESTAMP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ACCOUNTTEMPLATE_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "COSTCLASS_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "GENERALLEDGERACCOUNT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "GROUPNR",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DESCRIPTION_MLID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ACCOUNTTYPE_ENUMID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "POSTINGCALCTYPE_ENUMID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SESSION_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MGT_InsertBatchRunId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MGT_InsertDate",
+				"type": "datetime2",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "MilesUK",
+			"table": "ACCOUNT_Staging"
+		}
+	}
+}

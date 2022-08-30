@@ -1,0 +1,13 @@
+{
+	"name": "ls_dwh_mgt",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "ls_dwh_mgt",
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=dbservertrp86.database.windows.net;initial catalog=DWH_MGT;user id=trp86",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDMwQzFCMDQ5LUE2RDQtNDNDNi05QzRELTAwREY2MjI1QjQzN184ZDJhMmFkNy1kOTUxLTRmZDAtODZmNS0xM2VlY2Y2MzIzODUiDQp9"
+		}
+	}
+}

@@ -17,10 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": {
-							"value": "@pipeline().parameters.extract_sp",
-							"type": "Expression"
-						},
+						"sqlReaderQuery": "select 'dbo' as src_schema, 'Customer' as src_tbl, 'src' as src_db, 'select CustomerID,Name,Address from src.dbo.Customer' as src_extract_query,'dbo' as tgt_schema, 'Customer_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.Customer_Staging' as tgt_truncate_query",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -88,25 +85,26 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"additionalColumns": [
-										{
-											"value": "$$COLUMN:"
-										}
-									],
+									"sqlReaderQuery": "@{item().src_extract_query}",
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
 								"sink": {
 									"type": "AzureSqlSink",
+									"preCopyScript": {
+										"value": "@{item().tgt_truncate_query}",
+										"type": "Expression"
+									},
 									"writeBehavior": "insert",
-									"sqlWriterUseTableLock": false
+									"sqlWriterUseTableLock": false,
+									"disableMetricsCollection": false
 								},
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
 									"typeConversion": true,
 									"typeConversionSettings": {
-										"allowDataTruncation": true,
+										"allowDataTruncation": false,
 										"treatBooleanAsNumber": false
 									}
 								}
@@ -116,12 +114,24 @@
 									"referenceName": "ds_dynamic_tbl",
 									"type": "DatasetReference",
 									"parameters": {
-										"schema": "placeholder",
-										"table": "placeholder",
-										"database": "placeholder",
-										"dbservername": "placeholder",
-										"username": "placeholder",
-										"password": "placeholder"
+										"schema": {
+											"value": "@{item().src_schema}",
+											"type": "Expression"
+										},
+										"table": "@{item().src_tbl}",
+										"database": "@{item().src_db}",
+										"dbservername": {
+											"value": "@pipeline().parameters.servername",
+											"type": "Expression"
+										},
+										"username": {
+											"value": "@pipeline().parameters.username",
+											"type": "Expression"
+										},
+										"password": {
+											"value": "@pipeline().parameters.password",
+											"type": "Expression"
+										}
 									}
 								}
 							],
@@ -147,7 +157,7 @@
 		"parameters": {
 			"servername": {
 				"type": "string",
-				"defaultValue": "milesdwh1.database.windows.net"
+				"defaultValue": "milesdwh.database.windows.net"
 			},
 			"username": {
 				"type": "string",
@@ -176,6 +186,11 @@
 			"extract_sp": {
 				"type": "string",
 				"defaultValue": "dbo.ExtractQueries"
+			}
+		},
+		"variables": {
+			"x": {
+				"type": "String"
 			}
 		},
 		"annotations": []

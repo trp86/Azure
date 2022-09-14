@@ -7,7 +7,7 @@
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
@@ -140,12 +140,21 @@
 									"referenceName": "ds_dynamic_tbl",
 									"type": "DatasetReference",
 									"parameters": {
-										"schema": "placeholder",
-										"table": "placeholder",
-										"database": "placeholder",
-										"dbservername": "placeholder",
-										"username": "placeholder",
-										"password": "placeholder"
+										"schema": "@{item().tgt_schema}",
+										"table": "@{item().tgt_tbl}",
+										"database": "@{item().tgt_db}",
+										"dbservername": {
+											"value": "@pipeline().parameters.servername",
+											"type": "Expression"
+										},
+										"username": {
+											"value": "@pipeline().parameters.username",
+											"type": "Expression"
+										},
+										"password": {
+											"value": "@pipeline().parameters.password",
+											"type": "Expression"
+										}
 									}
 								}
 							]

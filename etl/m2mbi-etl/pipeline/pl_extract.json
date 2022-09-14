@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select 'dbo' as src_schema, 'Customer' as src_tbl, 'src' as src_db, 'select CustomerID,Name,Address from src.dbo.Customer' as src_extract_query,'dbo' as tgt_schema, 'Customer_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.Customer_Staging' as tgt_truncate_query",
+						"sqlReaderQuery": "\nselect 'dbo' as src_schema, 'Customer' as src_tbl, 'src' as src_db, 'select CustomerID,Name,Address from src.dbo.Customer' as src_extract_query,'dbo' as tgt_schema, 'Customer_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.Customer_Staging' as tgt_truncate_query\nunion all\nselect 'dbo' as src_schema, 'Orders' as src_tbl, 'src' as src_db, 'select order_id,customer_id,product_id,product_name from src.dbo.Orders' as src_extract_query,'dbo' as tgt_schema, 'Orders_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.Orders_Staging' as tgt_truncate_query\nunion all\nselect 'dbo' as src_schema, 'products' as src_tbl, 'src' as src_db, 'select product_id,product_name from src.dbo.products' as src_extract_query,'dbo' as tgt_schema, 'products_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.products_Staging' as tgt_truncate_query",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},

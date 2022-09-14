@@ -5,10 +5,13 @@
 		"factoryName": {
 			"value": "df-trp86"
 		},
+		"ls_dwh_mgt_connectionString": {
+			"value": ""
+		},
 		"ls_dwh_stg_connectionString": {
 			"value": ""
 		},
-		"ls_dwh_mgt_connectionString": {
+		"ls_generic_connectionString": {
 			"value": ""
 		},
 		"containerUri": {

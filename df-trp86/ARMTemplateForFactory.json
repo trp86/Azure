@@ -7,19 +7,169 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "df-trp86"
 		},
+		"ls_dwh_mgt_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_dwh_mgt'"
+		},
 		"ls_dwh_stg_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_dwh_stg'"
 		},
-		"ls_dwh_mgt_connectionString": {
+		"ls_generic_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_dwh_mgt'"
+			"metadata": "Secure string for 'connectionString' of 'ls_generic'"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_his_MilesUK')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "InsertPackageExecutionLog",
+						"type": "Script",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "ls_dwh_mgt",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": "DECLARE @PackageExecutionLogId AS INT\n, @PackageName AS VARCHAR(250) = 'TestPackage'\n, @BatchRunId AS INT = 100\n, @PackageID AS VARCHAR(250) = 'TestPackageId'\n, @ETLType AS VARCHAR(50) = 'DeltaLoad'\n, @PValidFromDate AS VARCHAR(50) = '31/08/2022'\n, @SSISDBPackageExecutionId INT = 200\n\nEXEC @PackageExecutionLogId = Audit.USP_InsertPackageExecutionLog @PackageName,@BatchRunId,@PackageID,@ETLType,@SSISDBPackageExecutionId\n\nSELECT PackageExecutionLogId = @PackageExecutionLogId\n ,ValidFromDate = ISNULL(TRY_CAST(TRIM(@PValidFromDate) AS DATETIME),GETDATE())"
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dwh_mgt')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dwh_stg",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SK_ACCOUNT_Staging",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "ACCOUNT_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "TIMESTAMP",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ACCOUNTTEMPLATE_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "COSTCLASS_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "GENERALLEDGERACCOUNT_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "GROUPNR",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DESCRIPTION_MLID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "ACCOUNTTYPE_ENUMID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "POSTINGCALCTYPE_ENUMID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "SESSION_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "MGT_InsertBatchRunId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MGT_InsertDate",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "MilesUK",
+					"table": "ACCOUNT_Staging"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dwh_stg')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_dwh_mgt')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "ls_dwh_mgt",
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_dwh_mgt_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ls_dwh_stg')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -35,18 +185,200 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ls_dwh_mgt')]",
+			"name": "[concat(parameters('factoryName'), '/ls_generic')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "ls_dwh_mgt",
+				"parameters": {
+					"databasename": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"username": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"password": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"dbservername": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					}
+				},
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
-					"connectionString": "[parameters('ls_dwh_mgt_connectionString')]"
+					"connectionString": "[parameters('ls_generic_connectionString')]"
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_dynamic_tbl')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_generic",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"databasename": {
+							"value": "@dataset().database",
+							"type": "Expression"
+						},
+						"username": {
+							"value": "@dataset().username",
+							"type": "Expression"
+						},
+						"password": {
+							"value": "@dataset().password",
+							"type": "Expression"
+						},
+						"dbservername": {
+							"value": "@dataset().dbservername",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"schema": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"table": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"database": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"dbservername": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"username": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					},
+					"password": {
+						"type": "string",
+						"defaultValue": "placeholder"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_generic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_extract')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": {
+									"value": "@pipeline().parameters.extract_sp",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_dynamic_tbl",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema": {
+										"value": "@pipeline().parameters.targetdbschema",
+										"type": "Expression"
+									},
+									"table": "placeholder",
+									"database": {
+										"value": "@pipeline().parameters.targetdbname",
+										"type": "Expression"
+									},
+									"dbservername": {
+										"value": "@pipeline().parameters.servername",
+										"type": "Expression"
+									},
+									"username": {
+										"value": "@pipeline().parameters.username",
+										"type": "Expression"
+									},
+									"password": {
+										"value": "@pipeline().parameters.password",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"servername": {
+						"type": "string",
+						"defaultValue": "milesdwh1.database.windows.net"
+					},
+					"username": {
+						"type": "string",
+						"defaultValue": "trp86"
+					},
+					"password": {
+						"type": "string",
+						"defaultValue": "Daimler2022"
+					},
+					"sourcedbname": {
+						"type": "string",
+						"defaultValue": "src"
+					},
+					"targetdbname": {
+						"type": "string",
+						"defaultValue": "dwh_stg"
+					},
+					"sourcedbschema": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"targetdbschema": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"extract_sp": {
+						"type": "string",
+						"defaultValue": "dbo.ExtractQueries"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_dynamic_tbl')]"
+			]
 		}
 	]
 }

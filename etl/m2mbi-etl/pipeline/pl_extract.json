@@ -85,16 +85,26 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
+									"additionalColumns": [
+										{
+											"name": "MGT_InsertBatchRunId",
+											"value": "200"
+										},
+										{
+											"name": "MGT_InsertDate",
+											"value": {
+												"value": "@formatDateTime(utcnow(), 'dd-MMM-yyyy')",
+												"type": "Expression"
+											}
+										}
+									],
 									"sqlReaderQuery": "@{item().src_extract_query}",
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
 								"sink": {
 									"type": "AzureSqlSink",
-									"preCopyScript": {
-										"value": "@{item().tgt_truncate_query}",
-										"type": "Expression"
-									},
+									"preCopyScript": "@{item().tgt_truncate_query}",
 									"writeBehavior": "insert",
 									"sqlWriterUseTableLock": false,
 									"disableMetricsCollection": false

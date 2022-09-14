@@ -1,0 +1,94 @@
+{
+	"name": "pl_extract",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": {
+							"value": "@pipeline().parameters.extract_sp",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_dynamic_tbl",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": {
+								"value": "@pipeline().parameters.targetdbschema",
+								"type": "Expression"
+							},
+							"table": "placeholder",
+							"database": {
+								"value": "@pipeline().parameters.targetdbname",
+								"type": "Expression"
+							},
+							"dbservername": {
+								"value": "@pipeline().parameters.servername",
+								"type": "Expression"
+							},
+							"username": {
+								"value": "@pipeline().parameters.username",
+								"type": "Expression"
+							},
+							"password": {
+								"value": "@pipeline().parameters.password",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"parameters": {
+			"servername": {
+				"type": "string",
+				"defaultValue": "milesdwh1.database.windows.net"
+			},
+			"username": {
+				"type": "string",
+				"defaultValue": "trp86"
+			},
+			"password": {
+				"type": "string",
+				"defaultValue": "Daimler2022"
+			},
+			"sourcedbname": {
+				"type": "string",
+				"defaultValue": "src"
+			},
+			"targetdbname": {
+				"type": "string",
+				"defaultValue": "dwh_stg"
+			},
+			"sourcedbschema": {
+				"type": "string",
+				"defaultValue": "dbo"
+			},
+			"targetdbschema": {
+				"type": "string",
+				"defaultValue": "dbo"
+			},
+			"extract_sp": {
+				"type": "string",
+				"defaultValue": "dbo.ExtractQueries"
+			}
+		},
+		"annotations": []
+	}
+}

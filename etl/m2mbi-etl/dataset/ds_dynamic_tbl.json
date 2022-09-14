@@ -1,0 +1,56 @@
+{
+	"name": "ds_dynamic_tbl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_generic",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"databasename": {
+					"value": "@dataset().database",
+					"type": "Expression"
+				},
+				"username": {
+					"value": "@dataset().username",
+					"type": "Expression"
+				},
+				"password": {
+					"value": "@dataset().password",
+					"type": "Expression"
+				},
+				"dbservername": {
+					"value": "@dataset().dbservername",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"schema": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"table": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"database": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"dbservername": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"username": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"password": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}

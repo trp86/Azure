@@ -2,11 +2,28 @@
 	"name": "ls_generic",
 	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
+		"parameters": {
+			"databasename": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"username": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"password": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			},
+			"dbservername": {
+				"type": "string",
+				"defaultValue": "placeholder"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
-			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=milesdwh1.database.windows.net;initial catalog=dwh_stg;user id=trp86",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEYwODI0MUY3LTM4NzAtNDU3Qy1BOENCLTM4OUU2Q0EzNDBERF9jMzgwMDRjMC0zMmFiLTRkYTMtODhiMC1hODRlYmRjY2EyYWMiDQp9"
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().dbservername};Initial Catalog=@{linkedService().databasename};User ID=@{linkedService().username};Password=@{linkedService().password}"
 		}
 	}
 }

@@ -1,0 +1,73 @@
+{
+	"name": "pl_stored_proc",
+	"properties": {
+		"activities": [
+			{
+				"name": "Stored procedure1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "id"
+					}
+				],
+				"typeProperties": {
+					"storedProcedureName": "Audit.USP_InsertPackageExecutionLog",
+					"storedProcedureParameters": {
+						"PackageName": {
+							"value": "TestName",
+							"type": "String"
+						},
+						"BatchRunId": {
+							"value": "1",
+							"type": "Int16"
+						},
+						"PackageGUID": {
+							"value": "Testguid",
+							"type": "String"
+						},
+						"ETLType": {
+							"value": "TruncateLoad",
+							"type": "String"
+						},
+						"SSISDBPackageExecutionId": {
+							"value": "1",
+							"type": "Int16"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_generic",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"databasename": "dwh_mgt",
+						"username": "trp86",
+						"password": "Daimler2022",
+						"dbservername": "milesdwh1.database.windows.net"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Stored procedure1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": []
+			}
+		],
+		"annotations": []
+	}
+}

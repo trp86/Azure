@@ -17,7 +17,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "\nselect 'dbo' as src_schema, 'Customer' as src_tbl, 'src' as src_db, 'select CustomerID,Name,Address from src.dbo.Customer' as src_extract_query,'dbo' as tgt_schema, 'Customer_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.Customer_Staging' as tgt_truncate_query\nunion all\nselect 'dbo' as src_schema, 'Orders' as src_tbl, 'src' as src_db, 'select order_id,customer_id,product_id,product_name from src.dbo.Orders' as src_extract_query,'dbo' as tgt_schema, 'Orders_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.Orders_Staging' as tgt_truncate_query\nunion all\nselect 'dbo' as src_schema, 'products' as src_tbl, 'src' as src_db, 'select product_id,product_name from src.dbo.products' as src_extract_query,'dbo' as tgt_schema, 'products_Staging' as tgt_tbl, 'dwh_stg' as tgt_db,'truncate table dwh_stg.dbo.products_Staging' as tgt_truncate_query",
+						"sqlReaderStoredProcedureName": {
+							"value": "@pipeline().parameters.extract_sp",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -98,18 +101,26 @@
 											}
 										}
 									],
-									"sqlReaderQuery": "@{item().src_extract_query}",
+									"sqlReaderQuery": {
+										"value": "@{item().src_extract_query}",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
 								"sink": {
 									"type": "AzureSqlSink",
-									"preCopyScript": "@{item().tgt_truncate_query}",
+									"preCopyScript": {
+										"value": "@{item().tgt_truncate_query}",
+										"type": "Expression"
+									},
 									"writeBehavior": "insert",
 									"sqlWriterUseTableLock": false,
 									"disableMetricsCollection": false
 								},
 								"enableStaging": false,
+								"enableSkipIncompatibleRow": true,
+								"validateDataConsistency": true,
 								"translator": {
 									"type": "TabularTranslator",
 									"typeConversion": true,
@@ -168,6 +179,68 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "Stored procedure1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy data1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": []
+						},
+						{
+							"name": "InsertPackageExecutionLog",
+							"description": "InsertPackageExecutionLog",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:2:00",
+								"retry": 1,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": {
+									"value": "@pipeline().parameters.sp_InsertPackageExecutionLog",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "ls_generic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"databasename": {
+										"value": "@pipeline().parameters.mgtdbname",
+										"type": "Expression"
+									},
+									"username": {
+										"value": "@pipeline().parameters.username",
+										"type": "Expression"
+									},
+									"password": {
+										"value": "@pipeline().parameters.password",
+										"type": "Expression"
+									},
+									"dbservername": {
+										"value": "@pipeline().parameters.servername",
+										"type": "Expression"
+									}
+								}
+							}
 						}
 					]
 				}
@@ -205,6 +278,18 @@
 			"extract_sp": {
 				"type": "string",
 				"defaultValue": "dbo.ExtractQueries"
+			},
+			"sp_InsertPackageExecutionLog": {
+				"type": "string",
+				"defaultValue": "USP_InsertPackageExecutionLog"
+			},
+			"mgtdbname": {
+				"type": "string",
+				"defaultValue": "dwh_mgt"
+			},
+			"auditschema": {
+				"type": "string",
+				"defaultValue": "Audit"
 			}
 		},
 		"variables": {

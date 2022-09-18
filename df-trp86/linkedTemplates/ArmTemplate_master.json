@@ -7,14 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "df-trp86"
 		},
-		"ls_dwh_mgt_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_dwh_mgt'"
-		},
-		"ls_dwh_stg_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_dwh_stg'"
-		},
 		"ls_generic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_generic'"
@@ -45,12 +37,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"ls_dwh_mgt_connectionString": {
-						"value": "[parameters('ls_dwh_mgt_connectionString')]"
-					},
-					"ls_dwh_stg_connectionString": {
-						"value": "[parameters('ls_dwh_stg_connectionString')]"
 					},
 					"ls_generic_connectionString": {
 						"value": "[parameters('ls_generic_connectionString')]"

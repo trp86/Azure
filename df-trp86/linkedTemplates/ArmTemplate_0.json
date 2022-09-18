@@ -7,14 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "df-trp86"
 		},
-		"ls_dwh_mgt_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_dwh_mgt'"
-		},
-		"ls_dwh_stg_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_dwh_stg'"
-		},
 		"ls_generic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_generic'"
@@ -24,34 +16,6 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/ls_dwh_mgt')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ls_dwh_mgt",
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('ls_dwh_mgt_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ls_dwh_stg')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ls_dwh_stg",
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('ls_dwh_stg_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ls_generic')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -84,13 +48,37 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_his_MilesUK')]",
+			"name": "[concat(parameters('factoryName'), '/pl_hello_world')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "InsertPackageExecutionLog",
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 5
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_stored_proc')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Script1",
 						"type": "Script",
 						"dependsOn": [],
 						"policy": {
@@ -102,16 +90,80 @@
 						},
 						"userProperties": [],
 						"linkedServiceName": {
-							"referenceName": "ls_dwh_mgt",
-							"type": "LinkedServiceReference"
+							"referenceName": "ls_generic",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"databasename": "dwh_mgt",
+								"username": "trp86",
+								"password": "Daimler2022",
+								"dbservername": "milesdwh.database.windows.net"
+							}
 						},
 						"typeProperties": {
 							"scripts": [
 								{
+									"parameters": [
+										{
+											"name": "PackageName",
+											"type": "String",
+											"value": "placeholder",
+											"direction": "Input"
+										},
+										{
+											"name": "BatchRunId",
+											"type": "Int64",
+											"value": "211",
+											"direction": "Input"
+										},
+										{
+											"name": "PackageGUID",
+											"type": "String",
+											"value": "placeholder",
+											"direction": "Input"
+										},
+										{
+											"name": "ETLType",
+											"type": "String",
+											"value": "placeholder",
+											"direction": "Input"
+										},
+										{
+											"name": "SSISDBPackageExecutionId",
+											"type": "Int64",
+											"value": "32",
+											"direction": "Input"
+										},
+										{
+											"name": "RC",
+											"type": "Int64",
+											"value": "45",
+											"direction": "Output"
+										}
+									],
 									"type": "Query",
-									"text": "DECLARE @PackageExecutionLogId AS INT\n, @PackageName AS VARCHAR(250) = 'TestPackage'\n, @BatchRunId AS INT = 100\n, @PackageID AS VARCHAR(250) = 'TestPackageId'\n, @ETLType AS VARCHAR(50) = 'DeltaLoad'\n, @PValidFromDate AS VARCHAR(50) = '31/08/2022'\n, @SSISDBPackageExecutionId INT = 200\n\nEXEC @PackageExecutionLogId = Audit.USP_InsertPackageExecutionLog @PackageName,@BatchRunId,@PackageID,@ETLType,@SSISDBPackageExecutionId\n\nSELECT PackageExecutionLogId = @PackageExecutionLogId\n ,ValidFromDate = ISNULL(TRY_CAST(TRIM(@PValidFromDate) AS DATETIME),GETDATE())"
+									"text": "\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId\n"
 								}
 							]
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Script1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "V_PackageExecutionLogId",
+							"value": {
+								"value": "@string(activity('Script1').output.resultSets[0].rows[0].PackageExecutionLogId)",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -119,100 +171,16 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"variables": {
+					"V_PackageExecutionLogId": {
+						"type": "String",
+						"defaultValue": "placeholder"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_dwh_mgt')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_staging')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_dwh_stg",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "SK_ACCOUNT_Staging",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "ACCOUNT_ID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "TIMESTAMP",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ACCOUNTTEMPLATE_ID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "COSTCLASS_ID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "GENERALLEDGERACCOUNT_ID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "GROUPNR",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DESCRIPTION_MLID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "ACCOUNTTYPE_ENUMID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "POSTINGCALCTYPE_ENUMID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "SESSION_ID",
-						"type": "bigint",
-						"precision": 19
-					},
-					{
-						"name": "MGT_InsertBatchRunId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "MGT_InsertDate",
-						"type": "datetime2",
-						"scale": 7
-					}
-				],
-				"typeProperties": {
-					"schema": "MilesUK",
-					"table": "ACCOUNT_Staging"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_dwh_stg')]"
+				"[concat(variables('factoryId'), '/linkedServices/ls_generic')]"
 			]
 		},
 		{
@@ -271,7 +239,16 @@
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [],
-				"typeProperties": {}
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().schema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().table",
+						"type": "Expression"
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_generic')]"
@@ -288,7 +265,7 @@
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "0.12:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -334,6 +311,135 @@
 							},
 							"firstRowOnly": false
 						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"additionalColumns": [
+												{
+													"name": "MGT_InsertBatchRunId",
+													"value": "200"
+												},
+												{
+													"name": "MGT_InsertDate",
+													"value": {
+														"value": "@formatDateTime(utcnow(), 'dd-MMM-yyyy')",
+														"type": "Expression"
+													}
+												}
+											],
+											"sqlReaderQuery": {
+												"value": "@{item().src_extract_query}",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"preCopyScript": {
+												"value": "@{item().tgt_truncate_query}",
+												"type": "Expression"
+											},
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"enableSkipIncompatibleRow": true,
+										"validateDataConsistency": true,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": false,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_dynamic_tbl",
+											"type": "DatasetReference",
+											"parameters": {
+												"schema": {
+													"value": "@{item().src_schema}",
+													"type": "Expression"
+												},
+												"table": "@{item().src_tbl}",
+												"database": "@{item().src_db}",
+												"dbservername": {
+													"value": "@pipeline().parameters.servername",
+													"type": "Expression"
+												},
+												"username": {
+													"value": "@pipeline().parameters.username",
+													"type": "Expression"
+												},
+												"password": {
+													"value": "@pipeline().parameters.password",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_dynamic_tbl",
+											"type": "DatasetReference",
+											"parameters": {
+												"schema": "@{item().tgt_schema}",
+												"table": "@{item().tgt_tbl}",
+												"database": "@{item().tgt_db}",
+												"dbservername": {
+													"value": "@pipeline().parameters.servername",
+													"type": "Expression"
+												},
+												"username": {
+													"value": "@pipeline().parameters.username",
+													"type": "Expression"
+												},
+												"password": {
+													"value": "@pipeline().parameters.password",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -343,7 +449,7 @@
 				"parameters": {
 					"servername": {
 						"type": "string",
-						"defaultValue": "milesdwh1.database.windows.net"
+						"defaultValue": "milesdwh.database.windows.net"
 					},
 					"username": {
 						"type": "string",
@@ -372,6 +478,31 @@
 					"extract_sp": {
 						"type": "string",
 						"defaultValue": "dbo.ExtractQueries"
+					},
+					"sp_InsertPackageExecutionLog": {
+						"type": "string",
+						"defaultValue": "USP_InsertPackageExecutionLog"
+					},
+					"mgtdbname": {
+						"type": "string",
+						"defaultValue": "dwh_mgt"
+					},
+					"auditschema": {
+						"type": "string",
+						"defaultValue": "Audit"
+					}
+				},
+				"variables": {
+					"x": {
+						"type": "String"
+					},
+					"V_packageexecid": {
+						"type": "String",
+						"defaultValue": "placeholder"
+					},
+					"V_PackageExecutionLogId": {
+						"type": "String",
+						"defaultValue": "placeholder"
 					}
 				},
 				"annotations": []

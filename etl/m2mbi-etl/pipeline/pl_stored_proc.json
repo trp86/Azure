@@ -27,8 +27,46 @@
 				"typeProperties": {
 					"scripts": [
 						{
+							"parameters": [
+								{
+									"name": "PackageName",
+									"type": "String",
+									"value": "placeholder",
+									"direction": "Input"
+								},
+								{
+									"name": "BatchRunId",
+									"type": "Int64",
+									"value": "211",
+									"direction": "Input"
+								},
+								{
+									"name": "PackageGUID",
+									"type": "String",
+									"value": "placeholder",
+									"direction": "Input"
+								},
+								{
+									"name": "ETLType",
+									"type": "String",
+									"value": "placeholder",
+									"direction": "Input"
+								},
+								{
+									"name": "SSISDBPackageExecutionId",
+									"type": "Int64",
+									"value": "32",
+									"direction": "Input"
+								},
+								{
+									"name": "RC",
+									"type": "Int64",
+									"value": "45",
+									"direction": "Output"
+								}
+							],
 							"type": "Query",
-							"text": "DECLARE @RC int\nDECLARE @PackageName varchar(500)\nDECLARE @BatchRunId int\nDECLARE @PackageGUID varchar(250)\nDECLARE @ETLType varchar(50)\nDECLARE @SSISDBPackageExecutionId int\n\n-- TODO: Set parameter values here.\nSET @PackageName = 'TestPackage'\nSET @BatchRunId = 100\nSET @PackageGUID = 'PackageGUID_100_Test'\nSET @ETLType = 'TruncateLoad'\nSET @SSISDBPackageExecutionId = 200\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId\n"
+							"text": "\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId\n"
 						}
 					]
 				}

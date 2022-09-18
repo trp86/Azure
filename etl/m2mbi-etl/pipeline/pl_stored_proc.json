@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Stored procedure1",
-				"type": "SqlServerStoredProcedure",
+				"name": "Script1",
+				"type": "Script",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -13,36 +13,7 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [
-					{
-						"name": "id"
-					}
-				],
-				"typeProperties": {
-					"storedProcedureName": "Audit.USP_InsertPackageExecutionLog",
-					"storedProcedureParameters": {
-						"PackageName": {
-							"value": "TestName",
-							"type": "String"
-						},
-						"BatchRunId": {
-							"value": "1",
-							"type": "Int16"
-						},
-						"PackageGUID": {
-							"value": "Testguid",
-							"type": "String"
-						},
-						"ETLType": {
-							"value": "TruncateLoad",
-							"type": "String"
-						},
-						"SSISDBPackageExecutionId": {
-							"value": "1",
-							"type": "Int16"
-						}
-					}
-				},
+				"userProperties": [],
 				"linkedServiceName": {
 					"referenceName": "ls_generic",
 					"type": "LinkedServiceReference",
@@ -50,8 +21,16 @@
 						"databasename": "dwh_mgt",
 						"username": "trp86",
 						"password": "Daimler2022",
-						"dbservername": "milesdwh1.database.windows.net"
+						"dbservername": "milesdwh.database.windows.net"
 					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "DECLARE @RC int\nDECLARE @PackageName varchar(500)\nDECLARE @BatchRunId int\nDECLARE @PackageGUID varchar(250)\nDECLARE @ETLType varchar(50)\nDECLARE @SSISDBPackageExecutionId int\n\n-- TODO: Set parameter values here.\nSET @PackageName = 'TestPackage'\nSET @BatchRunId = 100\nSET @PackageGUID = 'PackageGUID_100_Test'\nSET @ETLType = 'TruncateLoad'\nSET @SSISDBPackageExecutionId = 200\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId\n"
+						}
+					]
 				}
 			},
 			{
@@ -59,15 +38,28 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Stored procedure1",
+						"activity": "Script1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "V_PackageExecutionLogId",
+					"value": {
+						"value": "@string(activity('Script1').output.resultSets[0].rows[0].PackageExecutionLogId)",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"V_PackageExecutionLogId": {
+				"type": "String",
+				"defaultValue": "placeholder"
+			}
+		},
 		"annotations": []
 	}
 }

@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
+				"name": "Read Metadata",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -55,11 +55,11 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "Loop through metadata",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Read Metadata",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -227,7 +227,7 @@
 											},
 											{
 												"name": "PackageGUID",
-												"type": "Int64",
+												"type": "String",
 												"value": "placeholder",
 												"direction": "Input"
 											},
@@ -239,7 +239,7 @@
 											},
 											{
 												"name": "SSISDBPackageExecutionId",
-												"type": "String",
+												"type": "Int64",
 												"value": "32",
 												"direction": "Input"
 											},

@@ -179,6 +179,53 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "USP_InsertPackageExecutionLog",
+							"type": "Script",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:05:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "ls_generic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"databasename": "dwh_mgt",
+									"username": "trp86",
+									"password": "Daimler2022",
+									"dbservername": "milesdwh.database.windows.net"
+								}
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"parameters": [
+											{
+												"name": "PackageName",
+												"type": "String",
+												"value": "placeholder"
+											},
+											{
+												"name": "BatchRunId",
+												"type": "Int64",
+												"value": "211"
+											},
+											{
+												"name": "",
+												"value": ""
+											}
+										],
+										"type": "Query",
+										"text": "\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId"
+									}
+								]
+							}
 						}
 					]
 				}

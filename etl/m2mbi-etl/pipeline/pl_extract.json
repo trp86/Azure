@@ -76,9 +76,16 @@
 						{
 							"name": "Copy data1",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "SetPackageExecutionLogId",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
-								"timeout": "0.12:00:00",
+								"timeout": "0.00:10:00",
 								"retry": 0,
 								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
@@ -209,22 +216,64 @@
 											{
 												"name": "PackageName",
 												"type": "String",
-												"value": "placeholder"
+												"value": "placeholder",
+												"direction": "Input"
 											},
 											{
 												"name": "BatchRunId",
 												"type": "Int64",
-												"value": "211"
+												"value": "211",
+												"direction": "Input"
 											},
 											{
-												"name": "",
-												"value": ""
+												"name": "PackageGUID",
+												"type": "Int64",
+												"value": "placeholder",
+												"direction": "Input"
+											},
+											{
+												"name": "ETLType",
+												"type": "String",
+												"value": "placeholder",
+												"direction": "Input"
+											},
+											{
+												"name": "SSISDBPackageExecutionId",
+												"type": "String",
+												"value": "32",
+												"direction": "Input"
+											},
+											{
+												"name": "RC",
+												"type": "Int64",
+												"value": "45",
+												"direction": "Output"
 											}
 										],
 										"type": "Query",
 										"text": "\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId"
 									}
 								]
+							}
+						},
+						{
+							"name": "SetPackageExecutionLogId",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "USP_InsertPackageExecutionLog",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "V_PackageExecutionLogId",
+								"value": {
+									"value": "@string(activity('USP_InsertPackageExecutionLog').output.resultSets[0].rows[0].PackageExecutionLogId)",
+									"type": "Expression"
+								}
 							}
 						}
 					]

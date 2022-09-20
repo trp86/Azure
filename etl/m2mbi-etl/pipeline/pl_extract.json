@@ -267,6 +267,7 @@
 									]
 								}
 							],
+							"userProperties": [],
 							"typeProperties": {
 								"variableName": "V_PackageExecutionLogId",
 								"value": {
@@ -291,6 +292,26 @@
 								"variableName": "V_PipelineRunId",
 								"value": {
 									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "SetNumberOfRowsRead",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "CopyToStagingTable",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "V_NumberOfRowsRead",
+								"value": {
+									"value": "@activity('CopyToStagingTable').output.rowsCopied",
 									"type": "Expression"
 								}
 							}
@@ -358,6 +379,9 @@
 				"defaultValue": "placeholder"
 			},
 			"V_PipelineRunId": {
+				"type": "String"
+			},
+			"V_NumberOfRowsRead": {
 				"type": "String"
 			}
 		},

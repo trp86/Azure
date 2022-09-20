@@ -68,7 +68,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output.value",
+						"value": "@activity('Read Metadata').output.value",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -267,11 +267,30 @@
 									]
 								}
 							],
-							"userProperties": [],
 							"typeProperties": {
 								"variableName": "V_PackageExecutionLogId",
 								"value": {
 									"value": "@string(activity('USP_InsertPackageExecutionLog').output.resultSets[0].rows[0].PackageExecutionLogId)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "SetPipelineRunId",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "USP_InsertPackageExecutionLog",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "V_PipelineRunId",
+								"value": {
+									"value": "@pipeline().RunId",
 									"type": "Expression"
 								}
 							}
@@ -337,6 +356,9 @@
 			"V_PackageExecutionLogId": {
 				"type": "String",
 				"defaultValue": "placeholder"
+			},
+			"V_PipelineRunId": {
+				"type": "String"
 			}
 		},
 		"annotations": []

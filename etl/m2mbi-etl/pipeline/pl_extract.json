@@ -311,7 +311,7 @@
 							"typeProperties": {
 								"variableName": "V_NumberOfRowsRead",
 								"value": {
-									"value": "@activity('CopyToStagingTable').output.rowsCopied",
+									"value": "string(activity('CopyToStagingTable').output.rowsCopied)\n\n",
 									"type": "Expression"
 								}
 							}
@@ -367,9 +367,6 @@
 			}
 		},
 		"variables": {
-			"x": {
-				"type": "String"
-			},
 			"V_packageexecid": {
 				"type": "String",
 				"defaultValue": "placeholder"
@@ -379,10 +376,12 @@
 				"defaultValue": "placeholder"
 			},
 			"V_PipelineRunId": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "placeholder"
 			},
 			"V_NumberOfRowsRead": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "placeholder"
 			}
 		},
 		"annotations": []

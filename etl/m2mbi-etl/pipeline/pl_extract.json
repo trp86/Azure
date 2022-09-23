@@ -311,7 +311,7 @@
 							"typeProperties": {
 								"variableName": "V_NumberOfRowsRead",
 								"value": {
-									"value": "string(activity('CopyToStagingTable').output.rowsCopied)\n\n",
+									"value": "@replace(string(activity('CopyToStagingTable').output.rowsCopied),'\\n','')\n\n",
 									"type": "Expression"
 								}
 							}

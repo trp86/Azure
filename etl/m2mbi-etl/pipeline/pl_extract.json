@@ -309,7 +309,7 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "V_NumberOfRowsCopied",
+								"variableName": "V_NumberOfRowsRead",
 								"value": {
 									"value": "@replace(string(activity('CopyToStagingTable').output.rowsRead),'\\n','')\n\n",
 									"type": "Expression"
@@ -353,7 +353,7 @@
 							"typeProperties": {
 								"variableName": "V_NumberOfRowsCopied",
 								"value": {
-									"value": "@replace(string(activity('CopyToStagingTable').output.rowsRead),'\\n','')\n\n",
+									"value": "@replace(string(activity('CopyToStagingTable').output.rowsCopied),'\\n','')\n\n",
 									"type": "Expression"
 								}
 							}

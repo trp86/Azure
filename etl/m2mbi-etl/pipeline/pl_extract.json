@@ -78,7 +78,7 @@
 							"type": "Copy",
 							"dependsOn": [
 								{
-									"activity": "SetPackageExecutionLogId",
+									"activity": "Wait1",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -309,9 +309,51 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "V_NumberOfRowsRead",
+								"variableName": "V_NumberOfRowsCopied",
 								"value": {
-									"value": "@replace(string(activity('CopyToStagingTable').output.rowsCopied),'\\n','')\n\n",
+									"value": "@replace(string(activity('CopyToStagingTable').output.rowsRead),'\\n','')\n\n",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [
+								{
+									"activity": "SetPackageExecutionLogId",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "SetPipelineRunId",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						},
+						{
+							"name": "SetNumberOfRowsCopied",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "CopyToStagingTable",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "V_NumberOfRowsCopied",
+								"value": {
+									"value": "@replace(string(activity('CopyToStagingTable').output.rowsRead),'\\n','')\n\n",
 									"type": "Expression"
 								}
 							}
@@ -380,6 +422,10 @@
 				"defaultValue": "placeholder"
 			},
 			"V_NumberOfRowsRead": {
+				"type": "String",
+				"defaultValue": "placeholder"
+			},
+			"V_NumberOfRowsCopied": {
 				"type": "String",
 				"defaultValue": "placeholder"
 			}

@@ -504,6 +504,42 @@
 																"type": "Expression"
 															},
 															"direction": "Input"
+														},
+														{
+															"name": "NumberOfRowsError",
+															"type": "Int64",
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "NumberOfRowsForeignKeyUpdate",
+															"type": "Int64",
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "CompletedInd",
+															"type": "Int64",
+															"value": {
+																"value": "int(1)",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "FailedInd",
+															"type": "Int64",
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
 														}
 													],
 													"type": "Query",

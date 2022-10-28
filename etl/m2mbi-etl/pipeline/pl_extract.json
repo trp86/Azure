@@ -435,7 +435,7 @@
 								],
 								"ifTrueActivities": [
 									{
-										"name": "USP_InsertPackageExecutionLog_copy1",
+										"name": "USP_UpdatePackageExecutionLog",
 										"type": "Script",
 										"dependsOn": [],
 										"policy": {
@@ -461,44 +461,35 @@
 												{
 													"parameters": [
 														{
-															"name": "PackageName",
-															"type": "String",
-															"value": "placeholder",
-															"direction": "Input"
-														},
-														{
-															"name": "BatchRunId",
+															"name": "NumberOfRowsReadSource",
 															"type": "Int64",
-															"value": "211",
+															"value": {
+																"value": "@int(variables('V_NumberOfRowsRead'))",
+																"type": "Expression"
+															},
 															"direction": "Input"
 														},
 														{
-															"name": "PackageGUID",
-															"type": "String",
-															"value": "placeholder",
-															"direction": "Input"
-														},
-														{
-															"name": "ETLType",
-															"type": "String",
-															"value": "placeholder",
-															"direction": "Input"
-														},
-														{
-															"name": "SSISDBPackageExecutionId",
+															"name": "NumberOfRowsReadTarget",
 															"type": "Int64",
-															"value": "32",
+															"value": {
+																"value": "@int(variables('V_NumberOfRowsRead'))",
+																"type": "Expression"
+															},
 															"direction": "Input"
 														},
 														{
-															"name": "RC",
+															"name": "NumberOfRowsUpdate",
 															"type": "Int64",
-															"value": "45",
-															"direction": "Output"
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
 														}
 													],
 													"type": "Query",
-													"text": "\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId"
+													"text": "EXECUTE Audit.USP_UpdatePackageExecutionLog \n   @NumberOfRowsReadSource\n   ,@NumberOfRowsReadTarget\n   ,@NumberOfRowsUpdate\n   ,@NumberOfRowsInsert\n   ,@NumberOfRowsDelete\n   ,@NumberOfRowsError\n   ,@NumberOfRowsForeignKeyUpdate\n   ,@CompletedInd\n   ,@FailedInd\n   ,@FilterValue\n   ,@IncrementValue\n   ,@IncrementalLoadInd\n   ,@ApplyFilterInd\n   ,@ExecutionValidFromDate\n   ,@SqlHint\n   ,@ExecutePackageTestInd\n   ,@PreSQLExecutionInd\n   ,@PostSQLExecutionInd\n   ,@PackageVersion"
 												}
 											]
 										}

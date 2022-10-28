@@ -461,6 +461,15 @@
 												{
 													"parameters": [
 														{
+															"name": "PackageExecutionLogId",
+															"type": "Int64",
+															"value": {
+																"value": "@int(variables('V_packageexecid'))",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
 															"name": "NumberOfRowsReadSource",
 															"type": "Int64",
 															"value": {
@@ -515,15 +524,6 @@
 															"direction": "Input"
 														},
 														{
-															"name": "NumberOfRowsForeignKeyUpdate",
-															"type": "Int64",
-															"value": {
-																"value": "int(0)",
-																"type": "Expression"
-															},
-															"direction": "Input"
-														},
-														{
 															"name": "CompletedInd",
 															"type": "Int64",
 															"value": {
@@ -540,10 +540,55 @@
 																"type": "Expression"
 															},
 															"direction": "Input"
+														},
+														{
+															"name": "FilterValue",
+															"type": "String",
+															"value": {
+																"value": "@string('NoFilterValue')",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "IncrementValue",
+															"type": "String",
+															"value": {
+																"value": "@string('NoIncrementValue')",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "IncrementalLoadInd",
+															"type": "Int64",
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "ApplyFilterInd",
+															"type": "Int64",
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "ValidFromDate",
+															"type": "Datetime",
+															"value": {
+																"value": "@utcnow()",
+																"type": "Expression"
+															},
+															"direction": "Input"
 														}
 													],
 													"type": "Query",
-													"text": "EXECUTE Audit.USP_UpdatePackageExecutionLog \n   @NumberOfRowsReadSource\n   ,@NumberOfRowsReadTarget\n   ,@NumberOfRowsUpdate\n   ,@NumberOfRowsInsert\n   ,@NumberOfRowsDelete\n   ,@NumberOfRowsError\n   ,@NumberOfRowsForeignKeyUpdate\n   ,@CompletedInd\n   ,@FailedInd\n   ,@FilterValue\n   ,@IncrementValue\n   ,@IncrementalLoadInd\n   ,@ApplyFilterInd\n   ,@ExecutionValidFromDate\n   ,@SqlHint\n   ,@ExecutePackageTestInd\n   ,@PreSQLExecutionInd\n   ,@PostSQLExecutionInd\n   ,@PackageVersion"
+													"text": "EXECUTE Audit.USP_UpdatePackageExecutionLog \n   @PackageExecutionLogId    -- 1\n   ,@NumberOfRowsReadSource  -- 2\n   ,@NumberOfRowsReadTarget  -- 3\n   ,@NumberOfRowsUpdate      -- 4 \n   ,@NumberOfRowsInsert      -- 5\n   ,@NumberOfRowsDelete      -- 6\n   ,@NumberOfRowsError       -- 7\n   ,@CompletedInd            -- 8 \n   ,@FailedInd               -- 9\n   ,@FilterValue             -- 10 \n   ,@IncrementValue          -- 11\n   ,@IncrementalLoadInd      -- 12\n   ,@ApplyFilterInd          -- 13\n   ,@ValidFromDate           -- 14"
 												}
 											]
 										}

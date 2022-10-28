@@ -486,6 +486,24 @@
 																"type": "Expression"
 															},
 															"direction": "Input"
+														},
+														{
+															"name": "NumberOfRowsInsert",
+															"type": "Int64",
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
+														},
+														{
+															"name": "NumberOfRowsDelete",
+															"type": "Int64",
+															"value": {
+																"value": "int(0)",
+																"type": "Expression"
+															},
+															"direction": "Input"
 														}
 													],
 													"type": "Query",

@@ -383,7 +383,15 @@
 						{
 							"name": "SetFailureErrorMessage",
 							"type": "SetVariable",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "If Condition1",
+									"dependencyConditions": [
+										"Failed",
+										"Skipped"
+									]
+								}
+							],
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "V_NumberOfRowsRead",
@@ -409,7 +417,15 @@
 								"expression": {
 									"value": "@equals(variables('V_NumberOfRowsRead'),variables('V_NumberOfRowsCopied'))",
 									"type": "Expression"
-								}
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Fail1",
+										"type": "Fail",
+										"dependsOn": [],
+										"userProperties": []
+									}
+								]
 							}
 						}
 					]

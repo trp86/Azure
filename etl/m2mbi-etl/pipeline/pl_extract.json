@@ -396,7 +396,7 @@
 							"typeProperties": {
 								"variableName": "V_NumberOfRowsRead",
 								"value": {
-									"value": "@concat(\n\tactivity('USP_InsertPackageExecutionLog')?.Error?.message,\n\t'|',\n\tactivity('SetPackageExecutionLogId')?.Error?.message,\n\t'|',\n\tactivity('SetPipelineRunId')?.Error?.message,\n\t'|',\n\tactivity('CopyToStagingTable')?.Error?.message,\n\t'|',\n\tactivity('SetNumberOfRowsRead')?.Error?.message,\n\t'|',\n\tactivity('SetNumberOfRowsCopied')?.Error?.message,\n\t'|',\n\tactivity('MatchRowsReadAndCopied')?.Error?.message\n\t) ",
+									"value": "@concat(\n\tactivity('USP_InsertPackageExecutionLog')?.Error?.message,\n\t'|',\n\tactivity('SetPackageExecutionLogId')?.Error?.message,\n\t'|',\n\tactivity('SetPipelineRunId')?.Error?.message,\n\t'|',\n\tactivity('CopyToStagingTable')?.Error?.message,\n\t'|',\n\tactivity('SetNumberOfRowsRead')?.Error?.message,\n\t'|',\n\tactivity('SetNumberOfRowsCopied')?.Error?.message,item(),\n\t'|',\n\tactivity('USP_UpdatePackageExecutionLog')?.Error?.message,item(),\n\t'|',\n\tactivity('MatchRowsReadAndCopied')?.Error?.message\n\t)",
 									"type": "Expression"
 								}
 							}

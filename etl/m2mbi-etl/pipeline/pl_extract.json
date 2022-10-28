@@ -271,7 +271,7 @@
 							"typeProperties": {
 								"variableName": "V_PackageExecutionLogId",
 								"value": {
-									"value": "@string(activity('USP_InsertPackageExecutionLog').output.resultSets[0].rows[0].PackageExecutionLogId3)",
+									"value": "@string(activity('USP_InsertPackageExecutionLog').output.resultSets[0].rows[0].PackageExecutionLogId)",
 									"type": "Expression"
 								}
 							}

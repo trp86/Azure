@@ -432,6 +432,77 @@
 											"errorCode": "500"
 										}
 									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "USP_InsertPackageExecutionLog_copy1",
+										"type": "Script",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.00:05:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"linkedServiceName": {
+											"referenceName": "ls_generic",
+											"type": "LinkedServiceReference",
+											"parameters": {
+												"databasename": "dwh_mgt",
+												"username": "trp86",
+												"password": "Daimler2022",
+												"dbservername": "milesdwh.database.windows.net"
+											}
+										},
+										"typeProperties": {
+											"scripts": [
+												{
+													"parameters": [
+														{
+															"name": "PackageName",
+															"type": "String",
+															"value": "placeholder",
+															"direction": "Input"
+														},
+														{
+															"name": "BatchRunId",
+															"type": "Int64",
+															"value": "211",
+															"direction": "Input"
+														},
+														{
+															"name": "PackageGUID",
+															"type": "String",
+															"value": "placeholder",
+															"direction": "Input"
+														},
+														{
+															"name": "ETLType",
+															"type": "String",
+															"value": "placeholder",
+															"direction": "Input"
+														},
+														{
+															"name": "SSISDBPackageExecutionId",
+															"type": "Int64",
+															"value": "32",
+															"direction": "Input"
+														},
+														{
+															"name": "RC",
+															"type": "Int64",
+															"value": "45",
+															"direction": "Output"
+														}
+													],
+													"type": "Query",
+													"text": "\n\nEXECUTE @RC = [Audit].[USP_InsertPackageExecutionLog] \n   @PackageName\n  ,@BatchRunId\n  ,@PackageGUID\n  ,@ETLType\n  ,@SSISDBPackageExecutionId\n\nselect @RC as PackageExecutionLogId"
+												}
+											]
+										}
+									}
 								]
 							}
 						}

@@ -385,7 +385,7 @@
 							"type": "SetVariable",
 							"dependsOn": [
 								{
-									"activity": "If Condition1",
+									"activity": "MatchRowsReadAndCopied",
 									"dependencyConditions": [
 										"Failed",
 										"Skipped"
@@ -396,13 +396,13 @@
 							"typeProperties": {
 								"variableName": "V_NumberOfRowsRead",
 								"value": {
-									"value": "@concat(activity('USP_InsertPackageExecutionLog')?.Error?.message,'|',activity('SetPackageExecutionLogId')?.Error?.message) ",
+									"value": "@concat(activity('USP_InsertPackageExecutionLog')?.Error?.message,'|',activity('SetPackageExecutionLogId')?.Error?.message,'|',activity('MatchRowsReadAndCopied')?.Error?.message)  ",
 									"type": "Expression"
 								}
 							}
 						},
 						{
-							"name": "If Condition1",
+							"name": "MatchRowsReadAndCopied",
 							"type": "IfCondition",
 							"dependsOn": [
 								{
@@ -423,7 +423,14 @@
 										"name": "Fail1",
 										"type": "Fail",
 										"dependsOn": [],
-										"userProperties": []
+										"userProperties": [],
+										"typeProperties": {
+											"message": {
+												"value": "@string('Rows Copied is not equal to Rows read.')",
+												"type": "Expression"
+											},
+											"errorCode": "500"
+										}
 									}
 								]
 							}

@@ -12,3 +12,8 @@ extra_configs = {'fs.azure.account.key.blobstrgtrp86.blob.core.windows.net':'O5R
 # COMMAND ----------
 
 dbutils.fs.ls ('/mnt/raw/')
+
+# COMMAND ----------
+
+df = spark.read.csv('/mnt/raw/', header = True)
+display(df)
